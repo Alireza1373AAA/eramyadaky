@@ -33,8 +33,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.2
 
 # این بخش بسیار مهم است و باید دقیقاً به همین صورت در انتهای فایل باشد
-dependency_overrides:
-  web: 1.0.0
+
 
 flutter:
   uses-material-design: true
