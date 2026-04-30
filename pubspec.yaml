@@ -32,8 +32,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.2
 
-# این بخش بسیار مهم است و باید دقیقاً به همین صورت در انتهای فایل باشد
-
+# این بخش دقیقاً باید همین‌جا و با همین فاصله باشد تا خطای web-1.1.1 حل شود
+dependency_overrides:
+  web: 1.0.0
 
 flutter:
   uses-material-design: true
