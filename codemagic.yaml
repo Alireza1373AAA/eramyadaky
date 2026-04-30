@@ -3,12 +3,14 @@ workflows:
     name: Android Release Build
     max_build_duration: 60
     instance_type: mac_mini_m1
-    # خط stage_type حذف شد
     scripts:
       - name: Get Flutter packages
-        script: flutter pub get
+        script: |
+          flutter pub cache clean --force
+          flutter pub get
       - name: Build Android APK
-        script: flutter build apk --release
+        script: |
+          flutter build apk --release --no-tree-shake-icons
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
