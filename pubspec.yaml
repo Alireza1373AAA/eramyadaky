@@ -71,3 +71,5 @@ flutter_launcher_icons:
   image_path: "assets/logo.png"
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/logo.png"
+  dependency_overrides:
+  web: 1.0.0
