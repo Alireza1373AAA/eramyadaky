@@ -2,7 +2,6 @@ name: eramyadak_shop
 description: Eram Yadak WooCommerce Flutter app (RTL, Yellow Theme)
 publish_to: "none"
 
-# نسخهٔ اپ
 version: 1.0.0+1
 
 environment:
@@ -12,48 +11,37 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # نت‌ورک و کوکی
   dio: ^5.7.0
   cookie_jar: ^4.0.8
   dio_cookie_manager: ^3.1.1
   http: ^1.2.2
-
-  # وب‌ویو
   webview_flutter: ^4.8.0
   webview_flutter_android: ^3.16.0
   webview_flutter_wkwebview: ^3.13.0
-
-  # ابزارها
   intl: ^0.20.2
   url_launcher: ^6.3.0
- 
   shared_preferences: ^2.2.3
-
-  # لوکالایزیشن
   flutter_localizations:
     sdk: flutter
-
-  # رفع هشدار آیکن‌های iOS
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-
-  # آیکن و اسپلش
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.2
 
+# این بخش بسیار مهم است و باید دقیقاً به همین صورت در انتهای فایل باشد
+dependency_overrides:
+  web: 1.0.0
+
 flutter:
   uses-material-design: true
-
   assets:
     - assets/logo.png
     - assets/baner/
 
-# تنظیم اسپلش‌اسکرین
 flutter_native_splash:
   color: "#FFFFFF"
   image: assets/logo.png
@@ -64,12 +52,9 @@ flutter_native_splash:
     icon_background_color: "#FFFFFF"
     image: assets/logo.png
 
-# تنظیم آیکن اپ
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/logo.png"
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/logo.png"
-  dependency_overrides:
-  web: 1.0.0
