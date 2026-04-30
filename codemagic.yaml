@@ -3,18 +3,23 @@ workflows:
     name: Android Release Build
     max_build_duration: 60
     instance_type: mac_mini_m1
+
     environment:
-      flutter: 3.24.5 # ما نسخه را روی یک نسخه پایدارتر قفل می‌کنیم
+      flutter: stable   # ✅ مهم‌ترین تغییر
+
     scripts:
-      - name: Get Flutter packages
+      - name: Clean & Get Packages
         script: |
-          flutter pub cache clean --force
+          flutter clean
           flutter pub get
+
       - name: Build Android APK
         script: |
           flutter build apk --release --no-tree-shake-icons
+
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
+
     publishing:
       email:
         recipients:
