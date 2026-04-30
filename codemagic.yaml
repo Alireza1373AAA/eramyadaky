@@ -3,7 +3,7 @@ workflows:
     name: Android Release Build
     max_build_duration: 60
     instance_type: mac_mini_m1
-    stage_type: build
+    # خط stage_type حذف شد
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
