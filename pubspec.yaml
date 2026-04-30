@@ -34,7 +34,7 @@ dev_dependencies:
 
 # این بخش دقیقاً باید همین‌جا و با همین فاصله باشد تا خطای web-1.1.1 حل شود
 dependency_overrides:
-  web: 1.0.0
+  web: 0.5.1
 
 flutter:
   uses-material-design: true
