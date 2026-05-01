@@ -5,12 +5,13 @@ workflows:
     instance_type: mac_mini_m1
 
     environment:
-      flutter: stable   # ✅ مهم‌ترین تغییر
+      flutter: 3.22.0   # 🔥 ثابت و پایدار
 
     scripts:
-      - name: Clean & Get Packages
+      - name: Clean Deep
         script: |
           flutter clean
+          rm -rf ~/.pub-cache
           flutter pub get
 
       - name: Build Android APK
