@@ -2,15 +2,13 @@ name: Build APK
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main, master ]
 
 jobs:
-  build:
+  build-release-apk:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -25,14 +23,15 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Flutter pub get
+      - name: Install dependencies
         run: flutter pub get
 
       - name: Build release APK
         run: flutter build apk --release
 
-      - name: Upload APK artifact
+      - name: Upload release APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
