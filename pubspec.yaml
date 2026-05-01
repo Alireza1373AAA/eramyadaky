@@ -18,7 +18,7 @@ dependencies:
   webview_flutter: ^4.8.0
   webview_flutter_android: ^3.16.0
   webview_flutter_wkwebview: ^3.13.0
-  intl: ^0.20.2   # ✅ اصلاح جدید
+  intl: ^0.20.2
   url_launcher: ^6.3.0
   shared_preferences: ^2.2.3
   flutter_localizations:
@@ -32,9 +32,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.2
 
-# این بخش دقیقاً باید همین‌جا و با همین فاصله باشد تا خطای web-1.1.1 حل شود
-dependency_overrides:
-  web: 0.5.1
+# ❌ حذف شد (خیلی مهم)
+# dependency_overrides:
+#   web: 0.5.1
 
 flutter:
   uses-material-design: true
