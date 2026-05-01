@@ -1,24 +1,27 @@
 workflows:
   android-workflow:
-    name: Android APK Build
+    name: Android APK Build (Stable)
     max_build_duration: 60
     instance_type: mac_mini_m1
 
     environment:
-      flutter: 3.22.3
+      flutter: stable
 
     scripts:
-      - name: Clean project
+      - name: Clean EVERYTHING (important)
         script: |
           flutter clean
           rm -rf pubspec.lock
           rm -rf .dart_tool
+          rm -rf ~/.pub-cache
 
-      - name: Get dependencies
-        script: flutter pub get
+      - name: Get dependencies (fresh resolve)
+        script: |
+          flutter pub get
 
-      - name: Build APK
-        script: flutter build apk --release --no-tree-shake-icons
+      - name: Build APK (safe mode)
+        script: |
+          flutter build apk --release --no-tree-shake-icons --no-shrink
 
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
