@@ -2,8 +2,6 @@ name: Build APK
 
 on:
   workflow_dispatch:
-  push:
-  pull_request:
 
 jobs:
   build-apk:
@@ -26,30 +24,57 @@ jobs:
           cache: true
 
       - name: Flutter doctor
-        run: flutter doctor -v
+        run: flutter doctor -v | tee flutter-doctor.log
 
       - name: Install dependencies
-        run: flutter pub get
+        run: flutter pub get | tee flutter-pub-get.log
 
-      - name: Build debug APK (install-ready)
-        run: flutter build apk --debug
+      - name: Build debug APK
+        id: build_debug
+        continue-on-error: true
+        run: flutter build apk --debug -v | tee build-debug.log
 
-      - name: Upload debug APK artifact
+      - name: Build release APK
+        id: build_release
+        continue-on-error: true
+        run: flutter build apk --release -v | tee build-release.log
+
+      - name: Show generated APK files
+        if: always()
+        run: find build -type f -name "*.apk" -print | tee apk-files.log
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            flutter-doctor.log
+            flutter-pub-get.log
+            build-debug.log
+            build-release.log
+            apk-files.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload debug APK
+        if: ${{ hashFiles('build/app/outputs/flutter-apk/app-debug.apk') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
-          if-no-files-found: error
           retention-days: 7
 
-      - name: Build release APK (optional)
-        continue-on-error: true
-        run: flutter build apk --release
-
-      - name: Upload release APK artifact (if built)
+      - name: Upload release APK
         if: ${{ hashFiles('build/app/outputs/flutter-apk/app-release.apk') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
+
+      - name: Fail if no APK produced
+        if: ${{ hashFiles('build/app/outputs/flutter-apk/app-debug.apk') == '' && hashFiles('build/app/outputs/flutter-apk/app-release.apk') == '' }}
+        run: |
+          echo "No APK was produced. Check build-logs artifact for root cause."
+          exit 1
