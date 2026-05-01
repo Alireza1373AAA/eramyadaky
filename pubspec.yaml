@@ -31,7 +31,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.2
 
-# ✅ مهم: override درست برای حل js_interop
+
 
 
 flutter:
