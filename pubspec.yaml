@@ -38,3 +38,28 @@ flutter:
   assets:
     - assets/logo.png
     - assets/baner/
+<<<<<<< HEAD
+=======
+
+# تنظیم اسپلش‌اسکرین
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/logo.png
+  android: true
+  ios: true
+  web: false
+  android_12:
+    icon_background_color: "#FFFFFF"
+    image: assets/logo.png
+
+# تنظیم آیکن اپ
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/logo.png"
+
+dependency_overrides:
+  web: 1.0.0
+>>>>>>> d6a1a16 (temp: save local changes before rebase)
