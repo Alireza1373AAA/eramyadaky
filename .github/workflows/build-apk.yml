@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build-release-apk:
+  build-apk:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,13 +31,18 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Build debug APK (install-ready)
+        run: flutter build apk --debug
+
       - name: Build release APK
         run: flutter build apk --release
 
-      - name: Upload release APK artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: android-apks
+          path: |
+            build/app/outputs/flutter-apk/app-debug.apk
+            build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 7
