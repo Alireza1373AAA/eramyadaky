@@ -34,15 +34,22 @@ jobs:
       - name: Build debug APK (install-ready)
         run: flutter build apk --debug
 
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Upload APK artifacts
+      - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-apks
-          path: |
-            build/app/outputs/flutter-apk/app-debug.apk
-            build/app/outputs/flutter-apk/app-release.apk
+          name: app-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
+          retention-days: 7
+
+      - name: Build release APK (optional)
+        continue-on-error: true
+        run: flutter build apk --release
+
+      - name: Upload release APK artifact (if built)
+        if: ${{ hashFiles('build/app/outputs/flutter-apk/app-release.apk') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
