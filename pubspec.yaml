@@ -18,7 +18,7 @@ dependencies:
   webview_flutter: ^4.8.0
   webview_flutter_android: ^3.16.0
   webview_flutter_wkwebview: ^3.13.0
-  intl: ^0.19.0   # ✅ اصلاح شد
+  intl: ^0.20.2   # ✅ اصلاح جدید
   url_launcher: ^6.3.0
   shared_preferences: ^2.2.3
   flutter_localizations:
