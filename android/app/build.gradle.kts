@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.eramyadak_shop"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -14,17 +14,20 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"   // ✅ FIX شد
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     defaultConfig {
         applicationId = "com.example.eramyadak_shop"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 21
+        targetSdk = 34
 
-        versionCode = flutter.versionCode.toInt()   // ✅ FIX مطمئن
-        versionName = flutter.versionName            // ✅ OK
+        // ✅ FIX اصلی اینجاست
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
     buildTypes {
