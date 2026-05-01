@@ -20,7 +20,7 @@ dependencies:
   webview_flutter_android: ^3.16.0
   webview_flutter_wkwebview: ^3.13.0
 
-  intl: 0.19.0   # 🔥 قفل پایدار (حل conflict SDK)
+  intl: 0.19.0   # 🔥 مهم‌ترین fix
 
   url_launcher: ^6.3.0
   shared_preferences: ^2.2.3
@@ -37,7 +37,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.4
 
-  flutter_native_splash: ^2.4.1   # 🔥 نسخه safe
+  flutter_native_splash: ^2.4.1
 
 flutter:
   uses-material-design: true
@@ -45,21 +45,3 @@ flutter:
   assets:
     - assets/logo.png
     - assets/baner/
-
-flutter_native_splash:
-  color: "#FFFFFF"
-  image: assets/logo.png
-  android: true
-  ios: true
-  web: false
-
-  android_12:
-    icon_background_color: "#FFFFFF"
-    image: assets/logo.png
-
-flutter_launcher_icons:
-  android: true
-  ios: true
-  image_path: "assets/logo.png"
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/logo.png"
