@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK SAFE
 
 on:
   workflow_dispatch:
@@ -19,14 +19,18 @@ jobs:
         with:
           flutter-version: 3.22.3
 
-      - name: Clean project (FULL)
+      - name: Clean FULL
         run: |
           flutter clean
           rm -rf pubspec.lock
           rm -rf .dart_tool
+          rm -rf ~/.pub-cache
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Verify (no web)
+        run: flutter pub deps | grep web || echo "OK - no web"
 
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
