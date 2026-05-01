@@ -1,4 +1,4 @@
-name: Flutter Android Build
+name: Flutter APK Build
 
 on:
   workflow_dispatch:
@@ -8,21 +8,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Flutter
+      - name: Setup Flutter (FIXED)
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          flutter-version: 3.22.3   # 🔥 مهم: نسخه دقیق
 
-      - name: Install dependencies
+      - name: Get dependencies
         run: flutter pub get
 
       - name: Clean project
