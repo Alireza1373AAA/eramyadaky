@@ -53,5 +53,3 @@ flutter_launcher_icons:
 
 dependency_overrides:
   web: 1.0.0
-  shared_preferences_android: 2.2.3
-  url_launcher_android: 6.2.2
