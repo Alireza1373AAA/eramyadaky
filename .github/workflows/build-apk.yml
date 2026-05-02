@@ -28,6 +28,12 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Create Android platform files if missing
+        run: flutter create --platforms=android .
+
+      - name: Set Android compile SDK
+        run: python3 -c "from pathlib import Path; p=Path('android/app/build.gradle.kts'); s=p.read_text(); s=s.replace('compileSdk = flutter.compileSdkVersion','compileSdk = 36'); p.write_text(s); print('compileSdk set to 36')"
+
       - name: Build release APK
         run: flutter build apk --release
 
