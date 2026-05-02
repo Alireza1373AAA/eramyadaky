@@ -52,6 +52,7 @@ class RegistrationGate extends StatefulWidget {
 
 class _RegistrationGateState extends State<RegistrationGate> {
   late Future<bool> _registrationFuture;
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +60,15 @@ class _RegistrationGateState extends State<RegistrationGate> {
   }
 
   void _handleRegistered() {
-    setState(() => _registrationFuture = Future<bool>.value(true));
+    setState(() {
+      _registrationFuture = Future<bool>.value(true);
+    });
+  }
+
+  void _retryRegistrationCheck() {
+    setState(() {
+      _registrationFuture = AuthStorage.isRegistered();
+    });
   }
 
   @override
@@ -91,9 +100,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
                     Text('${snapshot.error}', textAlign: TextAlign.center),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
-                      onPressed: () => setState(
-                        () => _registrationFuture = AuthStorage.isRegistered(),
-                      ),
+                      onPressed: _retryRegistrationCheck,
                       icon: const Icon(Icons.refresh),
                       label: const Text('تلاش مجدد'),
                     ),
