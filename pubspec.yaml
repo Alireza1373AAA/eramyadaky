@@ -10,38 +10,28 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   dio: 5.3.3
   http: 1.1.0
   webview_flutter: 4.4.2
-
   intl: 0.19.0
-
   url_launcher: 6.1.14
   shared_preferences: 2.2.0
-
   flutter_localizations:
     sdk: flutter
-
   cupertino_icons: 1.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_native_splash: 2.3.6
   flutter_launcher_icons: 0.13.1
 
 flutter:
   uses-material-design: true
-
   assets:
     - assets/logo.png
     - assets/baner/
-<<<<<<< HEAD
-=======
 
-# تنظیم اسپلش‌اسکرین
 flutter_native_splash:
   color: "#FFFFFF"
   image: assets/logo.png
@@ -52,7 +42,6 @@ flutter_native_splash:
     icon_background_color: "#FFFFFF"
     image: assets/logo.png
 
-# تنظیم آیکن اپ
 flutter_launcher_icons:
   android: true
   ios: true
@@ -62,4 +51,3 @@ flutter_launcher_icons:
 
 dependency_overrides:
   web: 1.0.0
->>>>>>> d6a1a16 (temp: save local changes before rebase)
