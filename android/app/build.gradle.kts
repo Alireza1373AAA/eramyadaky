@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.eramyadak_shop"
-    compileSdk = 34
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -24,8 +24,6 @@ android {
         applicationId = "com.example.eramyadak_shop"
         minSdk = 21
         targetSdk = 34
-
-        // ✅ FIX اصلی اینجاست
         versionCode = 1
         versionName = "1.0.0"
     }
