@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/browser.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 
@@ -15,7 +13,6 @@ final Dio dio = Dio(
   ),
 );
 
-/// مقداردهی اولیه Dio و CookieManager
 void initHttp() {
   dio.interceptors.add(CookieManager(_cookieJar));
 
@@ -23,23 +20,16 @@ void initHttp() {
     InterceptorsWrapper(
       onRequest: (options, handler) => handler.next(options),
       onResponse: (response, handler) => handler.next(response),
-      onError: (DioError e, handler) => handler.next(e),
+      onError: (DioException e, handler) => handler.next(e),
     ),
   );
 }
 
-/// فقط وب/PWA: ارسال کوکی‌ها
-void enableWebCredentialsIfNeeded() {
-  if (kIsWeb) {
-    dio.httpClientAdapter = BrowserHttpClientAdapter()..withCredentials = true;
-  }
-}
+void enableWebCredentialsIfNeeded() {}
 
-/// Cache برای nonce
 String? _cachedNonce;
 DateTime? _nonceAt;
 
-/// دریافت nonce از Store API
 Future<String> _getStoreNonce() async {
   if (_cachedNonce != null &&
       _nonceAt != null &&
@@ -61,13 +51,11 @@ Future<String> _getStoreNonce() async {
   throw Exception('دریافت نانس ناموفق بود: ${res.statusCode}');
 }
 
-/// ریست دستی nonce
 void clearStoreNonce() {
   _cachedNonce = null;
   _nonceAt = null;
 }
 
-/// اجرای یک درخواست POST امن با nonce
 Future<Response> _postWithNonce(String path, Map<String, dynamic> data) async {
   Future<Response> _send(String nonce) {
     return dio.post(
@@ -97,7 +85,6 @@ Future<Response> _postWithNonce(String path, Map<String, dynamic> data) async {
   }
 }
 
-/// افزودن محصول به سبد
 Future<void> addToCart(int productId, {int qty = 1}) async {
   await _postWithNonce('/wp-json/wc/store/v1/cart/add-item', {
     'id': productId,
@@ -105,7 +92,6 @@ Future<void> addToCart(int productId, {int qty = 1}) async {
   });
 }
 
-/// دریافت وضعیت فعلی سبد
 Future<Map<String, dynamic>> getCart() async {
   try {
     final res = await dio.get(
@@ -123,14 +109,12 @@ Future<Map<String, dynamic>> getCart() async {
   }
 }
 
-/// حذف یک آیتم از سبد
 Future<void> removeItem(String itemKey) async {
   await _postWithNonce('/wp-json/wc/store/v1/cart/remove-item', {
     'key': itemKey,
   });
 }
 
-/// پاک کردن کل سبد
 Future<void> clearCart() async {
   await _postWithNonce('/wp-json/wc/store/v1/cart/clear', {});
 }
