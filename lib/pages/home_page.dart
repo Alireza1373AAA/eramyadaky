@@ -14,6 +14,7 @@ class _HomePageState extends State<HomePage> {
   final api = WooApi();
   final _scroll = ScrollController();
   final List<Map<String, dynamic>> _items = [];
+
   bool _loading = false;
   bool _hasMore = true;
   bool _showOnlyInStock = false;
@@ -41,39 +42,48 @@ class _HomePageState extends State<HomePage> {
 
   List<Map<String, dynamic>> _visibleItems() {
     final result = List<Map<String, dynamic>>.from(_items);
+
     result.sort((a, b) {
       final aOut = _isOut(a);
       final bOut = _isOut(b);
       if (aOut == bOut) return 0;
       return aOut ? 1 : -1;
     });
-    return _showOnlyInStock ? result.where((p) => !_isOut(p)).toList() : result;
+
+    return _showOnlyInStock
+        ? result.where((p) => !_isOut(p)).toList()
+        : result;
   }
 
   void _maybeMore() {
     if (_scroll.hasClients &&
-        _scroll.position.pixels > _scroll.position.maxScrollExtent - 300) {
+        _scroll.position.pixels >
+            _scroll.position.maxScrollExtent - 300) {
       _load();
     }
   }
 
   Future<void> _load({bool refresh = false}) async {
     if (_loading) return;
+
     if (refresh) {
       _page = 1;
       _hasMore = true;
       _items.clear();
       if (mounted) setState(() {});
     }
+
     if (!_hasMore) return;
 
     setState(() => _loading = true);
+
     try {
       final data = await api.products(
         page: _page,
         per: 12,
         search: _search.isEmpty ? null : _search,
       );
+
       if (data.isEmpty) {
         _hasMore = false;
       } else {
@@ -129,27 +139,35 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.only(bottom: 100),
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 children: [
                   const Text(
                     'جدیدترین محصولات',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   const Text('فقط موجودها'),
                   Switch(
                     value: _showOnlyInStock,
-                    onChanged: (v) => setState(() => _showOnlyInStock = v),
+                    onChanged: (v) =>
+                        setState(() => _showOnlyInStock = v),
                   ),
                 ],
               ),
             ),
+
+            /// 🔥 لیست محصولات
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12),
+              gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.48,
                 crossAxisSpacing: 12,
@@ -158,26 +176,35 @@ class _HomePageState extends State<HomePage> {
               itemCount: items.length + (_loading ? 2 : 0),
               itemBuilder: (ctx, i) {
                 if (i >= items.length) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator());
                 }
+
                 final p = items[i];
                 final out = _isOut(p);
+
                 return Stack(
                   children: [
                     ProductCard(
                       p: p,
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => ProductDetail(product: p)),
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ProductDetail(product: p),
+                        ),
                       ),
                       onCartUpdated: () {},
                     ),
+
+                    /// 🔥 لایه عدم موجودی (بدون خطای const)
                     if (out)
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.55),
-                            borderRadius: BorderRadius.circular(12),
+                            color: const Color(0x8C000000),
+                            borderRadius:
+                                BorderRadius.circular(12),
                           ),
                           alignment: Alignment.center,
                           child: const Text(
