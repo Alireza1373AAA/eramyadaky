@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Eram Yadak'), // 🔥 بدون Image (safe)
+        title: const Text('Eram Yadak'),
         actions: [
           IconButton(
             onPressed: () => _load(refresh: true),
@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                               ProductDetail(product: p),
                         ),
                       ),
-                      onCartUpdated: () {},
+                      onCartUpdated: () async {}, // 🔥 FIX اصلی
                     ),
 
                     if (out)
