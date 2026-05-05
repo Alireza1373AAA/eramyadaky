@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/woocommerce_api.dart';
 import '../widgets/product_card.dart';
@@ -15,8 +14,6 @@ class _HomePageState extends State<HomePage> {
   final WooApi api = WooApi();
 
   final ScrollController _scroll = ScrollController();
-  final PageController _pageController =
-      PageController(viewportFraction: 0.92);
 
   final List<Map<String, dynamic>> _items = [];
   List<Map<String, dynamic>> _categories = [];
@@ -28,26 +25,20 @@ class _HomePageState extends State<HomePage> {
   bool _showOnlyInStock = false;
 
   int _page = 1;
-  int _currentBanner = 0;
   int? _selectedCategory;
   String _search = '';
-
-  Timer? _autoSlide;
 
   @override
   void initState() {
     super.initState();
     _loadAll();
     _scroll.addListener(_maybeMore);
-    _startAutoSlide();
   }
 
   @override
   void dispose() {
     _scroll.removeListener(_maybeMore);
     _scroll.dispose();
-    _pageController.dispose();
-    _autoSlide?.cancel();
     super.dispose();
   }
 
@@ -56,13 +47,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadAll() async {
     try {
       await _loadProducts(refresh: true);
-    } catch (_) {}
-
-    try {
       await _loadCategories();
-    } catch (_) {}
-
-    try {
       await _loadBanners();
     } catch (_) {}
 
@@ -133,7 +118,7 @@ class _HomePageState extends State<HomePage> {
   // ================= HELPERS =================
 
   bool _isOut(Map<String, dynamic> p) {
-    final s = (p['stock_status'] ?? '').toLowerCase();
+    final s = (p['stock_status'] ?? '').toString().toLowerCase();
     return p['is_out'] == true ||
         s == 'outofstock' ||
         s == 'out_of_stock' ||
@@ -155,24 +140,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     return list;
-  }
-
-  // ================= SLIDER =================
-
-  void _startAutoSlide() {
-    _autoSlide = Timer.periodic(const Duration(seconds: 4), (_) {
-      if (!mounted ||
-          _banners.isEmpty ||
-          !_pageController.hasClients) return;
-
-      final next = (_currentBanner + 1) % _banners.length;
-
-      _pageController.animateToPage(
-        next,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    });
   }
 
   void _selectCategory(int? id) {
@@ -212,6 +179,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+
       body: RefreshIndicator(
         onRefresh: _refreshAll,
         child: ListView(
@@ -219,26 +187,21 @@ class _HomePageState extends State<HomePage> {
           children: [
 
             if (_loadingHeader)
-              const Center(child: CircularProgressIndicator()),
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Center(child: CircularProgressIndicator()),
+              ),
 
-            // ===== SLIDER =====
+            // ===== SINGLE BANNER =====
             if (_banners.isNotEmpty)
-              SizedBox(
-                height: 180,
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: _banners.length,
-                  onPageChanged: (i) =>
-                      setState(() => _currentBanner = i),
-                  itemBuilder: (_, i) => Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        _banners[i],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    _banners.last, // 👈 فقط آخرین بنر
+                    height: 180,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -252,8 +215,11 @@ class _HomePageState extends State<HomePage> {
                   itemCount: _categories.length + 1,
                   itemBuilder: (_, i) {
                     if (i == 0) {
-                      return _chip("همه", _selectedCategory == null,
-                          () => _selectCategory(null));
+                      return _chip(
+                        "همه",
+                        _selectedCategory == null,
+                        () => _selectCategory(null),
+                      );
                     }
 
                     final c = _categories[i - 1];
@@ -268,15 +234,18 @@ class _HomePageState extends State<HomePage> {
               ),
 
             // ===== FILTER =====
-            Row(
-              children: [
-                const Text("فقط موجودها"),
-                Switch(
-                  value: _showOnlyInStock,
-                  onChanged: (v) =>
-                      setState(() => _showOnlyInStock = v),
-                )
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  const Text("فقط موجودها"),
+                  Switch(
+                    value: _showOnlyInStock,
+                    onChanged: (v) =>
+                        setState(() => _showOnlyInStock = v),
+                  )
+                ],
+              ),
             ),
 
             // ===== PRODUCTS =====
@@ -284,10 +253,13 @@ class _HomePageState extends State<HomePage> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: items.length,
+              padding: const EdgeInsets.all(12),
               gridDelegate:
                   const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.55,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
               ),
               itemBuilder: (_, i) {
                 final p = items[i];
@@ -301,9 +273,7 @@ class _HomePageState extends State<HomePage> {
                           ProductDetail(product: p),
                     ),
                   ),
-                  onCartUpdated: () async {
-                    return;
-                  },
+                  onCartUpdated: () async {},
                 );
               },
             ),
