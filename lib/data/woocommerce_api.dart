@@ -182,3 +182,19 @@ class _CacheItem {
     return DateTime.now().difference(time) < ttl;
   }
 }
+Future<List<String>> banners() async {
+  final res = await http.get(
+    Uri.parse('$_base/wp-json/wp/v2/media?per_page=10&media_type=image'),
+  );
+
+  if (res.statusCode != 200) return [];
+
+  final decoded = jsonDecode(res.body);
+
+  if (decoded is! List) return [];
+
+  return decoded
+      .map((e) => e['source_url']?.toString() ?? '')
+      .where((e) => e.isNotEmpty)
+      .toList();
+}
