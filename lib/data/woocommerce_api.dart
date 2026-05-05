@@ -53,8 +53,9 @@ class WooApi {
     String? search,
     bool forceRefresh = false,
     String order = 'desc',
+    String orderBy = 'date', // ✅ فیکس اصلی
   }) async {
-    final key = 'products_${page}_${category}_${search ?? ''}';
+    final key = 'products_${page}_${category}_${search ?? ''}_$orderBy';
 
     if (forceRefresh) _cache.remove(key);
 
@@ -64,6 +65,7 @@ class WooApi {
           'page': page,
           'per_page': per,
           'order': order,
+          'orderby': orderBy, // ✅ مهم
           if (category != null) 'category': category,
           if (search != null && search.isNotEmpty) 'search': search,
         }),
@@ -79,8 +81,9 @@ class WooApi {
 
       return decoded.map<Map<String, dynamic>>((e) {
         final p = Map<String, dynamic>.from(e);
-        final stock = p['stock_status']?.toLowerCase();
-        p['is_out'] = stock == 'outofstock';
+        final stock = p['stock_status']?.toString().toLowerCase();
+        p['is_out'] =
+            stock == 'outofstock' || stock == 'out_of_stock';
         return p;
       }).toList();
     });
@@ -112,7 +115,9 @@ class WooApi {
       final decoded = jsonDecode(res.body);
       if (decoded is! List) return [];
 
-      return decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+      return decoded
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
     }, ttl: const Duration(hours: 1));
   }
 
@@ -226,7 +231,7 @@ class WooApi {
   }
 }
 
-// ================= CACHE CLASS =================
+// ================= CACHE =================
 
 class _CacheItem {
   final dynamic data;
