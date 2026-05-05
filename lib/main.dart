@@ -11,14 +11,13 @@ import 'pages/register_page.dart';
 import 'services/auth_storage.dart';
 import 'widgets/bottom_nav.dart';
 
-// سرویس ووکامرس (nonce + cookie + web credentials)
 import 'services/woocommerce_api.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  initHttp(); // اتصال CookieManager به Dio
-  enableWebCredentialsIfNeeded(); // فعال‌سازی ارسال کوکی‌ها در وب
+  initHttp();
+  enableWebCredentialsIfNeeded();
 
   runApp(const MyApp());
 }
@@ -89,11 +88,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Color.fromARGB(255, 255, 149, 0),
-                    ),
+                    const Icon(Icons.error_outline, size: 48),
                     const SizedBox(height: 12),
                     const Text('خطا در بررسی وضعیت ثبت‌نام'),
                     const SizedBox(height: 8),
@@ -135,7 +130,7 @@ class _ShellState extends State<Shell> {
   Widget build(BuildContext context) {
     final pages = <int, Widget>{
       0: const CategoriesPage(),
-      1: const HomePage(),
+      1: HomePage(),
       2: const CartPage(),
       3: const SupportPage(),
       4: const ProfilePage(),
