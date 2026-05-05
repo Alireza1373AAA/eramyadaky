@@ -32,7 +32,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme(),
       locale: const Locale('fa'),
-      supportedLocales: const [Locale('fa', ''), Locale('en', '')],
+      supportedLocales: const [
+        Locale('fa', ''),
+        Locale('en', ''),
+      ],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -45,6 +48,7 @@ class MyApp extends StatelessWidget {
 
 class RegistrationGate extends StatefulWidget {
   const RegistrationGate({super.key});
+
   @override
   State<RegistrationGate> createState() => _RegistrationGateState();
 }
@@ -80,6 +84,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
+
         if (snapshot.hasError) {
           return Scaffold(
             body: Center(
@@ -92,7 +97,10 @@ class _RegistrationGateState extends State<RegistrationGate> {
                     const SizedBox(height: 12),
                     const Text('خطا در بررسی وضعیت ثبت‌نام'),
                     const SizedBox(height: 8),
-                    Text('${snapshot.error}', textAlign: TextAlign.center),
+                    Text(
+                      '${snapshot.error}',
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       onPressed: _retryRegistrationCheck,
@@ -105,13 +113,16 @@ class _RegistrationGateState extends State<RegistrationGate> {
             ),
           );
         }
+
         final isRegistered = snapshot.data ?? false;
+
         if (!isRegistered) {
           return RegisterPage(
             lockNavigation: true,
             onRegistered: _handleRegistered,
           );
         }
+
         return const Shell();
       },
     );
@@ -120,17 +131,19 @@ class _RegistrationGateState extends State<RegistrationGate> {
 
 class Shell extends StatefulWidget {
   const Shell({super.key});
+
   @override
   State<Shell> createState() => _ShellState();
 }
 
 class _ShellState extends State<Shell> {
   int idx = 1;
+
   @override
   Widget build(BuildContext context) {
     final pages = <int, Widget>{
       0: const CategoriesPage(),
-      1: HomePage(),
+      1: HomePage(), // 🔥 بدون const (مهم)
       2: const CartPage(),
       3: const SupportPage(),
       4: const ProfilePage(),
