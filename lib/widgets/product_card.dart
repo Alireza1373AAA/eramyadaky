@@ -31,6 +31,27 @@ class _ProductCardState extends State<ProductCard> {
     return stock == 'outofstock' || widget.p['is_in_stock'] == false;
   }
 
+  int? _stockQuantity() {
+    final raw = widget.p['stock_quantity'] ?? widget.p['stock']?['quantity'];
+    if (raw is num) return raw.floor();
+    return int.tryParse(raw?.toString() ?? '');
+  }
+
+  bool get _canIncrease {
+    final stockQuantity = _stockQuantity();
+    return !_loading && (stockQuantity == null || _quantity < stockQuantity);
+  }
+
+  void _decreaseQuantity() {
+    if (_loading || _quantity <= 1) return;
+    setState(() => _quantity--);
+  }
+
+  void _increaseQuantity() {
+    if (!_canIncrease) return;
+    setState(() => _quantity++);
+  }
+
   int? _readUnitToman(Map<String, dynamic> item) {
     final possible = [
       item['unit_price'],
@@ -118,15 +139,23 @@ class _ProductCardState extends State<ProductCard> {
                     Price.formatToman(price),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
+                _QuantitySelector(
+                  quantity: _quantity,
+                  enabled: !isOut && !_loading,
+                  canDecrease: !_loading && _quantity > 1,
+                  canIncrease: !isOut && _canIncrease,
+                  onDecrease: _decreaseQuantity,
+                  onIncrease: _increaseQuantity,
+                ),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: (isOut || _loading) ? null : _addToCart,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isOut ? Colors.grey : _navyBlue,
+                    backgroundColor: isOut ? Colors.grey : _navyBlue,
                   ),
                   child: _loading
-                      ? SizedBox(
+                      ? const SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -134,9 +163,9 @@ class _ProductCardState extends State<ProductCard> {
                             strokeWidth: 2,
                           ),
                         )
-                      : Text(isOut ? "ناموجود" : "افزودن به سبد"),
+                      : Text(isOut ? "ناموجود" : "افزودن $_quantity به سبد"),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -160,6 +189,101 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _QuantitySelector extends StatelessWidget {
+  const _QuantitySelector({
+    required this.quantity,
+    required this.enabled,
+    required this.canDecrease,
+    required this.canIncrease,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  final int quantity;
+  final bool enabled;
+  final bool canDecrease;
+  final bool canIncrease;
+  final VoidCallback onDecrease;
+  final VoidCallback onIncrease;
+
+  @override
+  Widget build(BuildContext context) {
+    final foregroundColor = enabled ? _navyBlue : Colors.grey;
+
+    return Container(
+      height: 36,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: enabled ? const Color(0xFFF4F6FF) : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: enabled ? _navyBlue.withOpacity(0.18) : Colors.grey.shade300,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _QuantityButton(
+            icon: Icons.remove,
+            tooltip: 'کم کردن تعداد',
+            color: foregroundColor,
+            onPressed: canDecrease ? onDecrease : null,
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 34),
+            child: Text(
+              '$quantity',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: foregroundColor,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          _QuantityButton(
+            icon: Icons.add,
+            tooltip: 'زیاد کردن تعداد',
+            color: foregroundColor,
+            onPressed: canIncrease ? onIncrease : null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({
+    required this.icon,
+    required this.tooltip,
+    required this.color,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final Color color;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 36,
+      height: 36,
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        visualDensity: VisualDensity.compact,
+        tooltip: tooltip,
+        icon: Icon(icon, size: 18),
+        color: color,
+        disabledColor: Colors.grey.shade400,
+        onPressed: onPressed,
+      ),
     );
   }
 }
