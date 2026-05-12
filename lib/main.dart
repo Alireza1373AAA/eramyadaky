@@ -11,11 +11,13 @@ import 'pages/register_page.dart';
 import 'services/auth_storage.dart';
 import 'widgets/bottom_nav.dart';
 
+import 'data/store_api.dart';
 import 'services/woocommerce_api.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await StoreApi().initPersistedSession();
   initHttp();
   enableWebCredentialsIfNeeded();
 

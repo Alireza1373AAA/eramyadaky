@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:eramyadak_shop/config.dart';
 
 class StoreConfig {
@@ -22,8 +23,12 @@ class StoreApi {
   factory StoreApi() => _instance;
 
   final http.Client _client = http.Client();
+  static const String _cookiePrefsKey = 'store_api_cookie_v1';
+  static const String _noncePrefsKey = 'store_api_nonce_v1';
+
   static String _cookie = '';
   static String _storeApiNonce = '';
+  static Future<void>? _sessionLoadFuture;
 
   Uri _u(String path, [Map<String, String>? qp]) {
     final base = Uri.parse(StoreConfig.baseUrl.endsWith('/') ? StoreConfig.baseUrl : '${StoreConfig.baseUrl}/');
@@ -37,6 +42,26 @@ class StoreApi {
   }
 
   String get _authHeader => 'Basic ${base64Encode(utf8.encode('${AppConfig.wcKey}:${AppConfig.wcSecret}'))}';
+
+  Future<void> initPersistedSession() => _ensurePersistedSessionLoaded();
+
+  Future<void> _ensurePersistedSessionLoaded() {
+    return _sessionLoadFuture ??= () async {
+      final sp = await SharedPreferences.getInstance();
+      _cookie = sp.getString(_cookiePrefsKey) ?? '';
+      _storeApiNonce = sp.getString(_noncePrefsKey) ?? '';
+    }();
+  }
+
+  Future<void> _persistSession() async {
+    try {
+      final sp = await SharedPreferences.getInstance();
+      await sp.setString(_cookiePrefsKey, _cookie);
+      await sp.setString(_noncePrefsKey, _storeApiNonce);
+    } catch (e) {
+      debugPrint('StoreApi session persist failed: $e');
+    }
+  }
 
   Map<String, String> get _headers {
     final map = <String, String>{
@@ -54,6 +79,7 @@ class StoreApi {
 
   void _captureAuthFromResponse(http.BaseResponse r) {
     try {
+      var changed = false;
       final setCookieRaw = r.headers['set-cookie'];
       if (setCookieRaw?.isNotEmpty ?? false) {
         final parts = setCookieRaw!.split(RegExp(r',(?=\s*\w+=)'));
@@ -71,7 +97,11 @@ class StoreApi {
             existing.removeWhere((e) => e.split('=').first == keyName);
             existing.add(k);
           }
-          _cookie = existing.join('; ');
+          final nextCookie = existing.join('; ');
+          if (nextCookie != _cookie) {
+            _cookie = nextCookie;
+            changed = true;
+          }
         }
       }
       String? nonce;
@@ -79,19 +109,25 @@ class StoreApi {
         final key = k.toLowerCase();
         if (key == 'x-wc-store-api-nonce' || key == 'x-wp-nonce') nonce = v;
       });
-      if (nonce?.isNotEmpty ?? false) _storeApiNonce = nonce!;
+      if ((nonce?.isNotEmpty ?? false) && nonce != _storeApiNonce) {
+        _storeApiNonce = nonce!;
+        changed = true;
+      }
+      if (changed) unawaited(_persistSession());
     } catch (e) {
       debugPrint('StoreApi auth capture failed: $e');
     }
   }
 
   Future<http.Response> _get(Uri url) async {
+    await _ensurePersistedSessionLoaded();
     final resp = await _client.get(url, headers: _headers).timeout(StoreConfig.requestTimeout);
     _captureAuthFromResponse(resp);
     return resp;
   }
 
   Future<http.Response> _post(Uri url, Object? body) async {
+    await _ensurePersistedSessionLoaded();
     final payload = body is String ? body : json.encode(body);
     final resp = await _client.post(url, headers: _headers, body: payload).timeout(StoreConfig.requestTimeout);
     _captureAuthFromResponse(resp);
@@ -99,6 +135,7 @@ class StoreApi {
   }
 
   Future<http.Response> _postWithHeaders(Uri url, Object? body, {Map<String, String>? extraHeaders}) async {
+    await _ensurePersistedSessionLoaded();
     final payload = body is String ? body : json.encode(body);
     final headers = Map<String, String>.from(_headers);
     if (extraHeaders != null) headers.addAll(extraHeaders);
