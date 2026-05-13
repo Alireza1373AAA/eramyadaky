@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.eramyadak_shop"
+    namespace = "com.eramyadak.shop"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
@@ -21,7 +21,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.eramyadak_shop"
+        applicationId = "com.eramyadak.shop"
         minSdk = 21
         targetSdk = 34
         versionCode = flutter.versionCode
